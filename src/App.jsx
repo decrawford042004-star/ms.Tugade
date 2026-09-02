@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import TrackProfile from "./TrackProfile.jsx";
 import TrackTable from "./TrackTable.jsx";
 
 const GENRES = ["Pop", "Rock", "Indie", "Jazz"];
@@ -51,6 +52,20 @@ export default function App() {
   const [tracks, setTracks] = useState([]);
   const [view, setView] = useState("form");
   const [selectedId, setSelectedId] = useState(null);
+  const [genreFilter, setGenreFilter] = useState("All");
+  const [activeTrack, setActiveTrack] = useState(null);
+
+  const visibleTracks = useMemo(() => {
+    if (genreFilter === "All") {
+      return tracks;
+    }
+    return tracks.filter((track) => track.genre === genreFilter);
+  }, [tracks, genreFilter]);
+
+  useEffect(() => {
+    const found = tracks.find((track) => track.id === selectedId) ?? null;
+    setActiveTrack(found);
+  }, [selectedId, tracks]);
 
   function update(field, value) {
     const next = { ...form, [field]: value };
@@ -208,7 +223,33 @@ export default function App() {
           </button>
         </form>
       ) : (
-        <TrackTable tracks={tracks} selectedId={selectedId} onSelect={setSelectedId} />
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(16rem,0.8fr)]">
+          <div className="space-y-3">
+            <div className="flex flex-wrap gap-2">
+              {["All", ...GENRES].map((genre) => (
+                <button
+                  key={genre}
+                  type="button"
+                  onClick={() => setGenreFilter(genre)}
+                  className={`rounded-full px-3 py-1 text-sm ${
+                    genreFilter === genre
+                      ? "bg-sage text-white"
+                      : "bg-white text-sage"
+                  }`}
+                >
+                  {genre}
+                </button>
+              ))}
+            </div>
+            <TrackTable
+              key={genreFilter}
+              tracks={visibleTracks}
+              selectedId={selectedId}
+              onSelect={setSelectedId}
+            />
+          </div>
+          <TrackProfile track={activeTrack} />
+        </div>
       )}
     </div>
   );
