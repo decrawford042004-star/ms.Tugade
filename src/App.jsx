@@ -50,7 +50,6 @@ export default function App() {
   const [form, setForm] = useState(emptyForm);
   const [errors, setErrors] = useState({});
   const [tracks, setTracks] = useState([]);
-  const [view, setView] = useState("form");
   const [selectedId, setSelectedId] = useState(null);
   const [genreFilter, setGenreFilter] = useState("All");
   const [activeTrack, setActiveTrack] = useState(null);
@@ -95,7 +94,6 @@ export default function App() {
     setSelectedId(track.id);
     setForm(emptyForm);
     setErrors({});
-    setView("table");
   }
 
   return (
@@ -104,35 +102,13 @@ export default function App() {
         <p className="text-3xl" aria-hidden>
           💿
         </p>
-        <h1 className="mt-2 font-display text-3xl font-bold text-sage">VinylNest</h1>
+        <h1 className="mt-2 font-display text-3xl font-bold text-sage">SpotiDec</h1>
         <p className="mt-1 text-sm text-ink/70">
           Set A · Spotify Track Playlist Manager
         </p>
-        {tracks.length > 0 ? (
-          <div className="mt-4 flex gap-2">
-            <button
-              type="button"
-              className={`rounded-xl px-3 py-1 text-sm ${
-                view === "form" ? "bg-sage text-white" : "bg-mint text-sage"
-              }`}
-              onClick={() => setView("form")}
-            >
-              Add track
-            </button>
-            <button
-              type="button"
-              className={`rounded-xl px-3 py-1 text-sm ${
-                view === "table" ? "bg-sage text-white" : "bg-mint text-sage"
-              }`}
-              onClick={() => setView("table")}
-            >
-              Registry
-            </button>
-          </div>
-        ) : null}
       </header>
 
-      {view === "form" ? (
+      <div className="space-y-8">
         <form
           onSubmit={handleSubmit}
           noValidate
@@ -145,7 +121,7 @@ export default function App() {
               className={inputClass(errors.title)}
               value={form.title}
               onChange={(e) => update("title", e.target.value)}
-              placeholder="Midnight Cassette"
+              placeholder="Track title"
             />
           </Field>
 
@@ -169,7 +145,7 @@ export default function App() {
               className={inputClass(errors.artist)}
               value={form.artist}
               onChange={(e) => update("artist", e.target.value)}
-              placeholder="Nova Lane"
+              placeholder="Artist name"
             />
           </Field>
 
@@ -181,7 +157,7 @@ export default function App() {
               className={inputClass(errors.bpm)}
               value={form.bpm}
               onChange={(e) => update("bpm", e.target.value)}
-              placeholder="92"
+              placeholder="BPM"
             />
           </Field>
 
@@ -190,7 +166,7 @@ export default function App() {
               className={inputClass(errors.label)}
               value={form.label}
               onChange={(e) => update("label", e.target.value)}
-              placeholder="Cedar Press Records"
+              placeholder="Record label"
             />
           </Field>
 
@@ -222,35 +198,37 @@ export default function App() {
             Save track
           </button>
         </form>
-      ) : (
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(16rem,0.8fr)]">
-          <div className="space-y-3">
-            <div className="flex flex-wrap gap-2">
-              {["All", ...GENRES].map((genre) => (
-                <button
-                  key={genre}
-                  type="button"
-                  onClick={() => setGenreFilter(genre)}
-                  className={`rounded-full px-3 py-1 text-sm ${
-                    genreFilter === genre
-                      ? "bg-sage text-white"
-                      : "bg-white text-sage"
-                  }`}
-                >
-                  {genre}
-                </button>
-              ))}
+
+        {tracks.length > 0 ? (
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(16rem,0.8fr)]">
+            <div className="space-y-3">
+              <div className="flex flex-wrap gap-2">
+                {["All", ...GENRES].map((genre) => (
+                  <button
+                    key={genre}
+                    type="button"
+                    onClick={() => setGenreFilter(genre)}
+                    className={`rounded-full px-3 py-1 text-sm ${
+                      genreFilter === genre
+                        ? "bg-sage text-white"
+                        : "bg-white text-sage"
+                    }`}
+                  >
+                    {genre}
+                  </button>
+                ))}
+              </div>
+              <TrackTable
+                key={genreFilter}
+                tracks={visibleTracks}
+                selectedId={selectedId}
+                onSelect={setSelectedId}
+              />
             </div>
-            <TrackTable
-              key={genreFilter}
-              tracks={visibleTracks}
-              selectedId={selectedId}
-              onSelect={setSelectedId}
-            />
+            <TrackProfile track={activeTrack} />
           </div>
-          <TrackProfile track={activeTrack} />
-        </div>
-      )}
+        ) : null}
+      </div>
     </div>
   );
 }
