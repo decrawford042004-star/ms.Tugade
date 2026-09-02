@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Fraunces", serif;
+  --font-sans: "Nunito", sans-serif;
+  --color-ink: #1e2a24;
+  --color-cream: #f6f1e7;
+  --color-mint: #d8efe4;
+  --color-coral: #e07a5f;
+  --color-sage: #3d6b5a;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background:
+    radial-gradient(circle at top left, #ffe8dc 0, transparent 42%),
+    radial-gradient(circle at bottom right, #d8efe4 0, transparent 46%),
+    #f6f1e7;
+  color: #1e2a24;
+}
